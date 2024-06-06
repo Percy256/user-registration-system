@@ -15,7 +15,12 @@ public class UserService {
     }
 
     public void addUser(User user) {
-        users.add(user);
+        if (!users.contains(user)) {
+            users.add(user);
+        }
+        else {
+            System.out.println("User already exists");
+        }
     }
 
     // Method to retrieve a user by username, returning an Optional<User> to handle

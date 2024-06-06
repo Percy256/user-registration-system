@@ -73,21 +73,40 @@ public class UserView {
         String lastName = scanner.nextLine();
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
-        System.out.print("Enter date of birth: ");
+        System.out.println("Enter Date of Birth: mm/dd/yyyy");
         String dateOfBirth = scanner.nextLine();
 
-        DateFormat df = new SimpleDateFormat("mm/dd/yyyy");
-        Date date_of_birth = df.parse(dateOfBirth);
+        if(firstName.isEmpty() || lastName.isEmpty()|| username.isEmpty() || dateOfBirth.isEmpty()) {
+            System.out.println("All Fields required.");
+        }
+        else {
 
 
-        User user = new User(); // Create a new User object
-        user.setFirstname(firstName);
-        user.setLastname(lastName);
-        user.setUsername(username);
-        user.setDateOfBirth(date_of_birth);
-        UserService.users.add(user);
+            DateFormat birthDate = new SimpleDateFormat("mm/dd/yyyy");
+            Date date_of_birth = birthDate.parse(dateOfBirth);
+            boolean user_name_present = false;
+            for (User x : UserService.users) {
+                if ((x.getUsername().equals(username))) {
+                    user_name_present = true;
+                }
+            }
+            if (user_name_present) {
 
-        System.out.println("User registered successfully.");
+                System.out.println("Username exists. Please try again.");
+
+            } else {
+                User user = new User(); // Create a new User object
+                user.setFirstname(firstName);
+                user.setLastname(lastName);
+                user.setUsername(username);
+                user.setDateOfBirth(date_of_birth);
+                UserService.users.add(user);
+                System.out.println("User registered successfully.");
+            }
+
+
+        }
+
 
 
     }
