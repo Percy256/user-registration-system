@@ -8,10 +8,18 @@ import java.util.Optional;
 
 
 public class UserService {
-    public static List<User> users = new ArrayList<>();
+    private static   List<User> users = new ArrayList<>();
 
     public UserService() {
-        this.users= new ArrayList<>(); //initialize the list when UserService object is created
+
+    }
+
+    public static List<User> getUsers(){
+        return users;
+    }
+
+    public void setUsers(List<User> users){
+        this.users = users;
     }
 
     public void addUser(User user) {

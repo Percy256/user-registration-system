@@ -65,7 +65,6 @@ public class UserView {
             }
         }
     }
-
     private void registerUser() throws NoSuchFieldException, ParseException {
         System.out.print("Enter first name: "); // Prompt user for input
         String firstName = scanner.nextLine();
@@ -85,7 +84,7 @@ public class UserView {
             DateFormat birthDate = new SimpleDateFormat("mm/dd/yyyy");
             Date date_of_birth = birthDate.parse(dateOfBirth);
             boolean user_name_present = false;
-            for (User x : UserService.users) {
+            for (User x : UserService.getUsers()) {
                 if ((x.getUsername().equals(username))) {
                     user_name_present = true;
                 }
@@ -100,7 +99,7 @@ public class UserView {
                 user.setLastname(lastName);
                 user.setUsername(username);
                 user.setDateOfBirth(date_of_birth);
-                UserService.users.add(user);
+                UserService.getUsers().add(user);
                 System.out.println("User registered successfully.");
             }
 
@@ -112,8 +111,8 @@ public class UserView {
     }
 
     private void displayAllUsers() {
-        if(!UserService.users.isEmpty()) {
-            for (User u : UserService.users) {
+        if(!UserService.getUsers().isEmpty()) {
+            for (User u : UserService.getUsers()) {
                 System.out.println("User name: " + u.getUsername() + " has names " + u.getFirstname() + " " + u.getLastname() + "and date of birth " + u.getDateOfBirth());
             }
         }
@@ -125,7 +124,7 @@ public class UserView {
     private void getUserOfUsername() {
         System.out.print("Enter username for the user you wish to search: ");
 
-        for (User u : UserService.users) {
+        for (User u : UserService.getUsers()) {
             if (u.getUsername().equals(scanner.nextLine())) {
                 System.out.println("User name: " + u.getUsername() + " has names " + u.getFirstname() + " " + u.getLastname()+ "and date of birth " + u.getDateOfBirth());
             }
@@ -139,7 +138,7 @@ public class UserView {
     private void updateUserOfUsername() throws ParseException {
         System.out.print("Enter username for the user you wish to update ");
         String username = scanner.nextLine();
-        for (User u : UserService.users) {
+        for (User u : UserService.getUsers()) {
             if (u.getUsername().equals(username)) {
                 System.out.print("Enter new first name: "); // Prompt user for input
                 String firstName = scanner.nextLine();
@@ -165,9 +164,9 @@ public class UserView {
 
     private void deleteUserOfUsername() {
         System.out.print("Enter username for the user you wish to delete ");
-        for (User u : UserService.users) {
+        for (User u : UserService.getUsers()) {
             if (u.getUsername().equals(scanner.nextLine())) {
-                UserService.users.remove(u);
+                UserService.getUsers().remove(u);
                 System.out.println("User deleted successfully.");
             }
             else {
@@ -177,8 +176,8 @@ public class UserView {
     }
 
     private void deleteAllUsers() {
-        if(!UserService.users.isEmpty()) {
-            UserService.users.clear();
+        if(!UserService.getUsers().isEmpty()) {
+            UserService.getUsers().clear();
             System.out.println("All users deleted successfully.");
         }
         else {
