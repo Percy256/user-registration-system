@@ -1,6 +1,7 @@
 package org.pahappa.systems.registrationapp.models;
 
 import java.util.Date;
+import java.time.*;
 import java.util.Objects;
 
 public class User {
@@ -54,12 +55,12 @@ public class User {
     }
 
     @Override
-    public String toString() {
+    public String toString() {//Human-readable string representation of an object
         return username;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) {//To determine whether two objects of same class are equal
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
