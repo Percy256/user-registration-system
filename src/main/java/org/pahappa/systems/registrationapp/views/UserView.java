@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 import org.pahappa.systems.registrationapp.models.User;
 import org.pahappa.systems.registrationapp.services.UserService;
+import org.pahappa.systems.registrationapp.dao.UserDAO;
 
 public class UserView {
 
@@ -65,31 +66,32 @@ public class UserView {
                 }
             }catch (Exception e){
                 System.out.println("Invalid choice. Please try again.");
-                System.out.println(e.getMessage());
+                System.out.println(e);
                 scanner.nextLine(); // Consume the newline character
             }
         }
     }
     private void registerUser() throws NoSuchFieldException, ParseException {
-        System.out.print("Enter first name: "); // Prompt user for input
-        String firstName = scanner.nextLine();
-        if(firstName.isEmpty()){
-            System.out.println("First name cannot be empty.");
-            scanner.nextLine();
+        String firstName;
+        do {
+            System.out.print("Enter first name (no spaces or digits): ");
+            firstName = scanner.nextLine().trim(); // Remove leading/trailing spaces
+        } while (firstName.isEmpty() || firstName.matches(".*\\d+.*")); // Check for empty or digits
 
-        }
-        System.out.print("Enter last name: ");
-        String lastName = scanner.nextLine();
-        if(lastName.isEmpty()){
-            System.out.println("Last name cannot be empty.");
-            scanner.nextLine();
-        }
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        if(username.isEmpty()){
-            System.out.println("Username cannot be empty.");
-            scanner.nextLine();
-        }
+
+        String lastName;
+        do {
+            System.out.print("Enter last name (no spaces or digits): ");
+            lastName = scanner.nextLine().trim();
+        } while (lastName.isEmpty() || lastName.matches(".*\\d+.*"));
+
+        String username;
+        do {
+            System.out.print("Enter username (no spaces or digits, must be unique): ");
+            username = scanner.nextLine().trim();
+        } while (username.isEmpty() || username.matches(".*\\d+.*")); // Check for empty, digits
+
+
         System.out.println("Enter Date of Birth: mm/dd/yyyy");
         String dateOfBirth = scanner.nextLine();
         if(dateOfBirth.isEmpty()){
@@ -98,135 +100,45 @@ public class UserView {
         }
 
         else {
-
-
-            DateFormat birthDate = new SimpleDateFormat("MM/dd/yyyy");
-            Date date_of_birth = birthDate.parse(dateOfBirth);
-
-            //Convert date to localDate and format without time
-            LocalDate localDateOfBirth= date_of_birth.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-            //Get the current date
-            LocalDate currentDate = LocalDate.now();
-
-            if(localDateOfBirth.isAfter(currentDate)) {
-                System.out.println("Date of Birth can not be in the future.");
-            }
-            else {
-                // Convert LocalDate to Date
-                Date DOB = Date.from(localDateOfBirth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-
-                boolean user_name_present = false;
-                for (User x : UserService.getUsers()) {
-                    if ((x.getUsername().equals(username))) {
-                        user_name_present = true;
-                    }
-                }
-                if (user_name_present) {
-
-                    System.out.println("Username exists. Please try again.");
-
-                } else {
-                    User user = new User(); // Create a new User object
-                    user.setFirstname(firstName);
-                    user.setLastname(lastName);
-                    user.setUsername(username);
-                    user.setDateOfBirth(DOB);
-                    UserService.getUsers().add(user);
-                    System.out.println("User registered successfully.");
-                }
-            }
-
-
+            UserService.addUser(firstName,lastName,username,dateOfBirth);
         }
-
-
-
     }
 
+
     private void displayAllUsers() {
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        if(!UserService.getUsers().isEmpty()) {
-            for (User u : UserService.getUsers()) {
-                String formattedDate = dateFormat.format(u.getDateOfBirth());
-                System.out.println("User name: " + u.getUsername() + " has names " + u.getFirstname() + " " + u.getLastname() + "and date of birth " + formattedDate);
-            }
-        }
-        else {
-            System.out.println("There are no users registered.");
-        }
+        System.out.println("System has the following users");
+        UserService.ReturnAllUsers();
     }
 
     private void getUserOfUsername() {
         System.out.print("Enter username for the user you wish to search: ");
-
-        for (User u : UserService.getUsers()) {
-            if (u.getUsername().equals(scanner.nextLine())) {
-                System.out.println("User name: " + u.getUsername() + " has names " + u.getFirstname() + " " + u.getLastname()+ "and date of birth " + u.getDateOfBirth());
-            }
-            else {
-                System.out.println("Username does not match any user.");
-            }
-        }
-
+        String username = scanner.nextLine();
+        UserService.ReturnUser(username);
     }
 
     private void updateUserOfUsername() throws ParseException {
         System.out.print("Enter username for the user you wish to update ");
         String username = scanner.nextLine();
-        for (User u : UserService.getUsers()) {
-            if (u.getUsername().equals(username)) {
-                System.out.print("Enter new first name: "); // Prompt user for input
-                String firstName = scanner.nextLine();
-                System.out.print("Enter new last name: ");
-                String lastName = scanner.nextLine();
-                System.out.print("Enter new  date of birth: ");
-                String dateOfBirth = scanner.nextLine();
-                DateFormat birthDate = new SimpleDateFormat("MM/dd/yyyy");
-                Date date_of_birth = birthDate.parse(dateOfBirth);
-
-                //Convert date to localDate and format without time
-                LocalDate localDateOfBirth= date_of_birth.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                DateTimeFormatter formatter= DateTimeFormatter.ofPattern("MM/dd/yyyy");
-                String formattedDateOfBirth= localDateOfBirth.format(formatter);
-                Date date= (Date) formatter.parse(formattedDateOfBirth);
-
-
-                u.setLastname(lastName);
-                u.setFirstname(firstName);
-                u.setDateOfBirth(date);
-                System.out.println("User updated successfully.");
-            }
-            else {
-                System.out.println("Username does not match any user.");
-            }
-        }
+        System.out.println("Enter first name of user you wish to delete");
+        String first_name = scanner.nextLine();
+        System.out.println("Enter last name of user you wish to delete");
+        String last_name = scanner.nextLine();
+        System.out.println("Enter date of birth of user you wish to delete");
+        String date_of_birth = scanner.nextLine();
+        UserService.updateUser(username, first_name,last_name,date_of_birth);
 
 
     }
 
     private void deleteUserOfUsername() {
-        System.out.print("Enter username for the user you wish to delete ");
-        for (User u : UserService.getUsers()) {
-            if (u.getUsername().equals(scanner.nextLine())) {
-                UserService.getUsers().remove(u);
-                System.out.println("User deleted successfully.");
-            }
-            else {
-                System.out.println("Username does not match any user.");
-            }
-        }
+        System.out.println("Enter user name of user you wish to delete");
+        String username = scanner.nextLine();
+        UserService.deleteUser(username);
     }
 
     private void deleteAllUsers() {
-        if(!UserService.getUsers().isEmpty()) {
-            UserService.getUsers().clear();
-            System.out.println("All users deleted successfully.");
-        }
-        else {
-            System.out.println("There are no users to delete.");
-        }
+        UserService.deleteUsers();
+        System.out.println("Users deleted from database");
 
     }
 }
